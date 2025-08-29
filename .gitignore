@@ -1,0 +1,40 @@
+# Build artifacts
+.buildozer/
+bin/
+*.apk
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+cache/
+
+# Local configuration
+local_config.json
+test_config.json
+
+# Security keys (excluding the ones needed for the app)
+# Note: encryption.key and powerbi_encryption.key are needed for the app
