@@ -1,7 +1,18 @@
 name: 🚀 Compilar APK Android - Power BI Dashboard
 
-on:
-  push:
+on:    - name: 🔧 Configurar autotools correctamente
+      run: |
+        # Hacer el script ejecutable y ejecutarlo
+        chmod +x fix_autotools.sh
+        ./fix_autotools.sh
+
+        # Configuraciones adicionales para evitar problemas de autotools
+        export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
+        export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig:$PKG_CONFIG_PATH"
+
+        # Configurar para que buildozer use herramientas del sistema
+        echo "export AUTOCONF_VERSION=2.71" >> $GITHUB_ENV
+        echo "export AUTOMAKE_VERSION=1.16" >> $GITHUB_ENV:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
@@ -41,6 +52,7 @@ jobs:
           automake \
           m4 \
           libtool \
+          libtool-bin \
           pkg-config \
           zlib1g-dev \
           libncurses5-dev \
@@ -49,19 +61,35 @@ jobs:
           cmake \
           make \
           g++ \
-          libffi-dev \
-          libssl-dev
+          patch \
+          xz-utils \
+          file \
+          gettext \
+          texinfo
 
-    - name: 🔄 Reparar autotools (autoreconf)
+    - name: � Configurar autotools correctamente
       run: |
-        sudo autoreconf -fi || true
+        # Actualizar autotools a la versión más reciente
+        sudo apt-get install -y autotools-dev
+        # Regenerar archivos de autotools si es necesario
+        export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
+        export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig:$PKG_CONFIG_PATH"
 
     - name: 📦 Instalar dependencias Python
       run: |
         python -m pip install --upgrade pip
-        pip install kivy kivymd pandas requests cryptography
-        pip install buildozer cython
-        pip install --upgrade setuptools wheel
+        pip install --upgrade setuptools wheel cython
+        pip install kivy[base]==2.1.0
+        pip install kivymd==1.2.0
+        pip install pandas requests cryptography
+        pip install buildozer==1.5.0
+        pip install --upgrade sh colorama appdirs six
+
+    - name: 🔧 Configurar variables de entorno para Android
+      run: |
+        echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+        echo "PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools" >> $GITHUB_ENV
 
     - name: 📱 Configurar Android SDK (cache)
       uses: actions/cache@v3
@@ -75,11 +103,36 @@ jobs:
     - name: 🔧 Preparar buildozer
       run: |
         mkdir -p ~/.buildozer
+        # Limpiar compilaciones anteriores
         buildozer android clean || true
+        # Configurar permisos
+        chmod +x buildozer.spec
 
-    - name: 🚀 Compilar APK
+    - name: 🚀 Compilar APK (con manejo de errores mejorado)
       run: |
-        buildozer android debug
+        # Configurar variables de entorno específicas para autotools
+        export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
+        export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig:$PKG_CONFIG_PATH"
+        export AUTOCONF_VERSION="2.71"
+        export AUTOMAKE_VERSION="1.16"
+
+        # Configurar buildozer para usar herramientas del sistema
+        export BUILDOZER_AUTOTOOLS_REGEN=1
+
+        # Intentar compilación con reintentos para errores de autotools
+        for i in {1..3}; do
+          echo "🔨 Intento de compilación #$i"
+          if buildozer android debug -v; then
+            echo "✅ Compilación exitosa en intento #$i"
+            break
+          else
+            echo "❌ Error en intento #$i, reintentando..."
+            # Limpiar completamente para siguiente intento
+            buildozer android clean || true
+            rm -rf .buildozer/android/platform/python-for-android/dist || true
+            sleep 15
+          fi
+        done
 
     - name: 📦 Subir APK como artefacto
       uses: actions/upload-artifact@v4
