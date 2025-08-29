@@ -239,14 +239,14 @@ p4a.branch = develop
 # https://developer.android.com/guide/topics/manifest/uses-sdk-element
 android.api = 33
 
-# (int) Minimum API your APK / AAB will support.
-android.minapi = 21
+# (int) Minimum API your APK / AAB will support. (actualizado para numpy)
+android.minapi = 24
 
 # (str) Android NDK version to use (cambiado a versión más estable)
 android.ndk = 28c
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
-android.ndk_api = 21
+android.ndk_api = 24
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
