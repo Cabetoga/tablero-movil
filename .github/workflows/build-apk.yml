@@ -38,6 +38,8 @@ jobs:
           zip \
           unzip \
           autoconf \
+          automake \
+          m4 \
           libtool \
           pkg-config \
           zlib1g-dev \
@@ -45,6 +47,8 @@ jobs:
           libncursesw5-dev \
           libtinfo6 \
           cmake \
+          make \
+          g++ \
           libffi-dev \
           libssl-dev
 
@@ -92,5 +96,3 @@ jobs:
         echo "   3. Descargar 'PowerBI-Dashboard-APK'"
         echo "   4. Extraer el archivo APK"
         echo "   5. ¡Instalar en el celular!"
-
-
