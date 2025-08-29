@@ -1,1 +1,94 @@
+name: 🚀 Compilar APK Android - Power BI Dashboard
 
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Permite ejecutar manualmente
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout del código
+      uses: actions/checkout@v4
+
+    - name: 🐍 Configurar Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: ☕ Configurar Java 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: 🛠️ Instalar dependencias del sistema
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          libssl-dev \
+          libffi-dev \
+          python3-dev \
+          git \
+          zip \
+          unzip \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libtinfo5 \
+          cmake \
+          libffi-dev \
+          libssl-dev
+
+    - name: 📦 Instalar dependencias Python
+      run: |
+        python -m pip install --upgrade pip
+        pip install kivy kivymd pandas requests cryptography
+        pip install buildozer cython
+        pip install --upgrade setuptools wheel
+
+    - name: 📱 Configurar Android SDK (cache)
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-
+
+    - name: 🔧 Preparar buildozer
+      run: |
+        mkdir -p ~/.buildozer
+        buildozer android clean || true
+
+    - name: 🚀 Compilar APK
+      run: |
+        buildozer android debug
+
+    - name: 📦 Subir APK como artefacto
+      uses: actions/upload-artifact@v3
+      with:
+        name: PowerBI-Dashboard-APK
+        path: bin/*.apk
+        retention-days: 30
+
+    - name: 📊 Información del APK
+      run: |
+        echo "📱 APK compilado exitosamente!"
+        ls -la bin/
+        echo "📦 Tamaño del APK:"
+        du -h bin/*.apk
+        echo "🎯 Para descargar:"
+        echo "   1. Ir a la pestaña 'Actions' en GitHub"
+        echo "   2. Hacer clic en esta ejecución"
+        echo "   3. Descargar 'PowerBI-Dashboard-APK'"
+        echo "   4. Extraer el archivo APK"
+        echo "   5. ¡Instalar en el celular!"
