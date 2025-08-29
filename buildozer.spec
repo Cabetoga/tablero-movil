@@ -141,10 +141,10 @@ android.allow_backup = True
 #p4a.url =
 
 # (str) python-for-android fork to use in case if p4a.url is not specified, defaults to upstream (kivy)
-#p4a.fork = kivy
+p4a.fork = kivy
 
-# (str) python-for-android branch to use, defaults to master
-#p4a.branch = master
+# (str) python-for-android branch to use, defaults to master (usamos develop para corregir problemas de autotools)
+p4a.branch = develop
 
 # (str) python-for-android specific commit to use, defaults to HEAD, must be within p4a.branch
 #p4a.commit = HEAD
@@ -242,8 +242,8 @@ android.api = 33
 # (int) Minimum API your APK / AAB will support.
 android.minapi = 21
 
-# (str) Android NDK version to use
-android.ndk = 25b
+# (str) Android NDK version to use (cambiado a versión más estable)
+android.ndk = 23c
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 android.ndk_api = 21
