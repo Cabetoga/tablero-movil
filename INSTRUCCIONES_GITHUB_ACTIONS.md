@@ -20,8 +20,8 @@ GitHub Actions es un servicio gratuito que permite ejecutar código automáticam
 1. **Ir a [github.com](https://github.com)**
 2. **Hacer clic en "New repository"**
 3. **Configurar repositorio:**
-   - **Nombre:** `tablero-movil-comcel`
-   - **Descripción:** `Aplicación móvil Power BI Dashboard - Comcel`
+   - **Nombre:** `tablero-movil`
+   - **Descripción:** `Aplicación móvil Power BI Dashboard`
    - **Visibilidad:** Público (para usar GitHub Actions gratis)
    - ✅ **Add a README file**
 4. **Hacer clic en "Create repository"**
@@ -135,3 +135,4 @@ Si tienes algún problema:
 - **Gratis** para siempre
 - **Automático** y confiable
 - **APK optimizado** para producción
+
