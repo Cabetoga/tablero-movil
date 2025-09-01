@@ -19,8 +19,20 @@ sudo apt-get install -y \
     build-essential \
     patch \
     gettext \
+    gettext-base \
+    autopoint \
     texinfo \
     autoconf-archive
+
+# Verificar que autopoint esté disponible
+echo "🔍 Verificando autopoint:"
+if command -v autopoint &> /dev/null; then
+    echo "✅ autopoint disponible"
+    autopoint --version
+else
+    echo "❌ autopoint NO disponible - instalando..."
+    sudo apt-get install -y gettext autopoint
+fi
 
 # Configurar variables de entorno para autotools y libtool
 export ACLOCAL_PATH="/usr/share/aclocal:/usr/local/share/aclocal:$ACLOCAL_PATH"
