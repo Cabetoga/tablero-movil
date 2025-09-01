@@ -55,6 +55,7 @@ jobs:
           xz-utils \
           file \
           gettext \
+          gettext-base \
           texinfo \
           autotools-dev \
           autogen
@@ -63,6 +64,18 @@ jobs:
       run: |
         # Instalar versiones más recientes de autotools si están disponibles
         sudo apt-get install -y autoconf-archive
+
+        # Verificar y asegurar que autopoint esté disponible
+        echo "🔍 Verificando disponibilidad de autopoint:"
+        if ! command -v autopoint &> /dev/null; then
+          echo "❌ autopoint no encontrado, instalando gettext completo..."
+          sudo apt-get install -y gettext gettext-base autopoint
+        else
+          echo "✅ autopoint disponible"
+        fi
+
+        # Verificar que autopoint funcione
+        autopoint --version || echo "⚠️ autopoint no funciona correctamente"
 
         # Regenerar autotools completamente
         sudo autoreconf --install --force --verbose || true
